@@ -1,0 +1,1252 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EventDrive – Klickbarer Prototyp v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#F1EFFB; --panel:#FFFFFF; --panel-2:#F6F4FD; --ink:#161027; --muted:#645E78; --line:#E1DCF4;
+  --accent:#6B2FE0; --accent-2:#3D8BFF; --accent-ink:#FFFFFF; --ok:#0E8F5C; --warn:#B4780B; --bad:#D23B3B; --fill:#BDB6DC;
+  --grad: linear-gradient(135deg,#EFEAFC 0%,#DCE3FB 55%,#CFE0FA 100%);
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#150F23; --panel:#1D1732; --panel-2:#241D3C; --ink:#EEEBFB; --muted:#A79FC7; --line:#332A54;
+    --accent:#9A6CFF; --accent-2:#6FA6FF; --accent-ink:#160B2E; --ok:#4FD196; --warn:#F0B24C; --bad:#FF8A80; --fill:#4A4070;
+    --grad: linear-gradient(135deg,#1B1430 0%,#161C33 60%,#101A30 100%);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#150F23; --panel:#1D1732; --panel-2:#241D3C; --ink:#EEEBFB; --muted:#A79FC7; --line:#332A54;
+  --accent:#9A6CFF; --accent-2:#6FA6FF; --accent-ink:#160B2E; --ok:#4FD196; --warn:#F0B24C; --bad:#FF8A80; --fill:#4A4070;
+  --grad: linear-gradient(135deg,#1B1430 0%,#161C33 60%,#101A30 100%);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--ink);font:400 15px/1.5 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:env(safe-area-inset-bottom,0px)}
+h1,h2,h3{font-family:"Manrope","Inter",system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.15;margin:0}
+h1{font-size:28px} h2{font-size:21px} h3{font-size:16px}
+p{margin:0}
+button,input,select{font:inherit;color:inherit}
+select{-webkit-appearance:none;-moz-appearance:none;appearance:none;border-radius:9px;cursor:pointer;
+  background-color:var(--panel);border:1px solid var(--line);padding:9px 12px;min-height:40px;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 18px) center,calc(100% - 13px) center;background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+  padding-right:32px!important}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+a{color:var(--accent)}
+
+/* Top */
+.top{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:12px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+.brand{display:flex;align-items:center;gap:9px;font-family:"Manrope",sans-serif;font-weight:800;font-size:17px;margin-right:auto}
+.brand .mark{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--accent-2),var(--accent));flex:none}
+.top select{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:7px 10px}
+.shell{display:grid;grid-template-columns:216px minmax(0,1fr)}
+.side{border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:2px;background:var(--panel)}
+.side .who{padding:2px 12px 14px;font-size:13px;color:var(--muted)}
+.side .who b{display:block;color:var(--ink);font-size:15px}
+.navbtn{display:flex;align-items:center;gap:10px;text-align:left;background:none;border:0;border-radius:9px;padding:9px 12px;cursor:pointer;font-weight:600;color:var(--ink)}
+.navbtn .ico{width:8px;height:8px;border-radius:2px;background:var(--fill);flex:none}
+.navbtn:hover{background:var(--panel-2)}
+.navbtn[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
+.navbtn[aria-current="page"] .ico{background:var(--accent-ink)}
+.main{padding:26px 30px 90px;max-width:1060px;width:100%}
+.head{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+.head p{margin-top:6px}
+
+/* Bottom tab bar (mobile) */
+.bottomnav{display:none}
+@media (max-width:820px){
+  .shell{grid-template-columns:1fr}
+  .side{display:none}
+  .main{padding:18px 16px 96px}
+  .top{padding:10px 14px}
+  .bottomnav{display:flex;position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));z-index:15;box-shadow:0 -4px 16px rgba(20,10,50,.08)}
+  .bottomnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:6px 2px;color:var(--muted);font-size:11px;font-weight:600;border-radius:8px}
+  .bottomnav button .dot{width:7px;height:7px;border-radius:50%;background:var(--fill)}
+  .bottomnav button[aria-current="page"]{color:var(--accent)}
+  .bottomnav button[aria-current="page"] .dot{background:var(--accent)}
+}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--panel);border-radius:9px;padding:10px 16px;font-weight:700;cursor:pointer;min-height:40px}
+.btn:hover{background:var(--panel-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.quiet{border-color:transparent;background:transparent;color:var(--accent);padding:8px 8px}
+.btn.quiet:hover{background:var(--panel-2)}
+.btn.danger{color:var(--bad);border-color:var(--bad);background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:7px 12px;font-size:13.5px;min-height:34px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row.end{justify-content:flex-end}
+
+/* stepper (qty) */
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.stepper button{width:38px;height:38px;border:0;background:var(--panel-2);font-size:18px;font-weight:700;cursor:pointer}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+.stepper output{min-width:44px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Notes */
+.notes{border-left:3px solid var(--accent);background:var(--panel-2);padding:12px 16px;margin:0 0 24px;font-size:13.5px;border-radius:0 8px 8px 0}
+.notes dl{margin:6px 0 0;display:grid;grid-template-columns:110px 1fr;gap:4px 14px}
+.notes dt{font-weight:700}
+.notes dd{margin:0;color:var(--muted)}
+@media (max-width:560px){.notes dl{grid-template-columns:1fr}}
+
+/* Step indicator */
+.steps{display:flex;gap:0;margin:4px 0 22px;list-style:none;padding:0}
+.steps li{flex:1;display:flex;flex-direction:column;gap:6px;position:relative}
+.steps li b{font-size:12px;color:var(--muted);font-weight:700}
+.steps li::before{content:"";height:6px;border-radius:3px;background:var(--line)}
+.steps li.done::before{background:var(--ok)}
+.steps li.current::before{background:var(--accent)}
+.steps li.current b{color:var(--accent)}
+.steps li.done b{color:var(--ok)}
+
+/* Tables → responsive cards */
+.scroll{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-weight:700;color:var(--muted);font-size:12.5px;padding:8px 12px;border-bottom:1px solid var(--ink);white-space:nowrap}
+.tbl td{padding:13px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl td.num,.tbl th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl .name{font-weight:700}
+.tbl .sub{color:var(--muted);font-size:13px}
+@media (max-width:720px){
+  table.tbl.responsive thead{display:none}
+  table.tbl.responsive, table.tbl.responsive tbody, table.tbl.responsive tr, table.tbl.responsive td{display:block;width:100%}
+  table.tbl.responsive{background:var(--panel)}
+  table.tbl.responsive tr{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;padding:4px 14px;background:var(--panel)}
+  table.tbl.responsive td{border-bottom:1px solid var(--line);padding:9px 0;display:flex;justify-content:space-between;align-items:center;gap:14px}
+  table.tbl.responsive td:last-child{border-bottom:0}
+  table.tbl.responsive td::before{content:attr(data-label);color:var(--muted);font-weight:700;font-size:12px;flex:0 0 auto}
+  table.tbl.responsive td.block{display:block}
+  table.tbl.responsive td.block::before{display:block;margin-bottom:6px}
+}
+
+/* Chips */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;white-space:nowrap}
+.chip::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.chip.ok{color:var(--ok)} .chip.warn{color:var(--warn)} .chip.bad{color:var(--bad)} .chip.neutral{color:var(--muted)} .chip.info{color:var(--accent)}
+
+/* Quota bar */
+.bar{display:flex;height:14px;border-radius:4px;overflow:hidden;background:var(--line);min-width:140px}
+.bar i{display:block;height:100%}
+.s-mine{background:var(--accent)}
+.s-res{background:repeating-linear-gradient(45deg,var(--accent) 0 3px,transparent 3px 6px)}
+.s-other{background:var(--fill)}
+.s-ord{background:var(--ink)}
+.s-resall{background:repeating-linear-gradient(45deg,var(--ink) 0 3px,transparent 3px 6px)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:12px;height:10px;margin-right:6px;vertical-align:-1px;background:var(--fill);border-radius:2px}
+.legend .l-mine::before{background:var(--accent)}
+.legend .l-res::before{background:repeating-linear-gradient(45deg,var(--accent) 0 3px,transparent 3px 6px)}
+.legend .l-ord::before{background:var(--ink)}
+.legend .l-resall::before{background:repeating-linear-gradient(45deg,var(--ink) 0 3px,transparent 3px 6px)}
+.legend .l-free::before{background:var(--line)}
+.cellbar{min-width:170px}
+
+/* Sections & forms */
+.sec{padding:22px 0;border-top:1px solid var(--line)}
+.sec h3{margin-bottom:10px}
+.facts{display:flex;flex-wrap:wrap;gap:8px 36px;margin:14px 0 18px}
+.facts div{display:flex;flex-direction:column}
+.facts b{font-family:"Manrope",sans-serif;font-size:25px;line-height:1.1}
+.facts span{font-size:13px;color:var(--muted)}
+.form{display:grid;gap:16px;max-width:560px}
+.form label,.form fieldset{display:grid;gap:5px;font-weight:700;border:0;padding:0;margin:0}
+.form legend{padding:0;margin-bottom:5px;font-weight:700}
+.form input[type=text],.form input[type=email],.form input[type=number],.form input[type=date],.form select{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-weight:400;width:100%;min-height:40px}
+.form input:disabled{opacity:.5}
+.check{display:flex!important;grid-auto-flow:column;align-items:flex-start;gap:10px!important;font-weight:400!important}
+.check input{margin-top:4px;width:18px;height:18px}
+.form label.choice{display:flex!important;flex-direction:row!important;gap:10px;align-items:flex-start!important;font-weight:400!important;padding:12px 14px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.choice input{flex:none;margin-top:3px}
+.choice span{flex:1;text-align:left}
+.choice:has(input:checked){border-color:var(--accent);background:var(--panel-2)}
+.choice b{display:block}
+.dealerpick{display:grid;gap:10px}
+.dealerpick .addrow{display:flex;gap:8px;flex-wrap:wrap}
+.dealerpick .addrow input{flex:1;min-width:180px}
+.dealeritem{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+.dealeritem .dname{flex:1;font-weight:700}
+.dealeritem input{width:90px}
+.dealeritem .rm{background:none;border:0;color:var(--bad);font-weight:700;cursor:pointer;padding:6px}
+.dealerempty{padding:14px;border:1px dashed var(--line);border-radius:9px;color:var(--muted);text-align:center}
+.quota{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;padding:14px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px}
+.quota.hidden{display:none}
+.quota label{font-weight:400}
+.msg{padding:11px 14px;border-radius:8px;border-left:3px solid var(--muted);background:var(--panel-2);margin:10px 0}
+.msg.ok{border-color:var(--ok)} .msg.warn{border-color:var(--warn)} .msg.bad{border-color:var(--bad)}
+.pre{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:14px;overflow:auto;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}
+
+/* Invoice document */
+.modal.modal-invoice{max-width:660px}
+.invoice-doc{font-size:14px}
+.invoice-head{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:2px solid var(--ink)}
+.invoice-brand{font-family:"Manrope",sans-serif;font-weight:800;font-size:17px}
+.invoice-meta{text-align:right;font-size:13px}
+.invoice-meta p{margin:2px 0}
+.invoice-parties{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
+.invoice-parties p{margin:4px 0 0}
+.invoice-event{background:var(--panel-2);border-radius:8px;padding:12px 14px;margin-bottom:16px}
+.invoice-totals{display:grid;grid-template-columns:1fr auto;gap:4px 24px;max-width:280px;margin:14px 0 0 auto;font-size:14px}
+.invoice-totals .grand{font-weight:800;font-size:16px;border-top:1px solid var(--line);padding-top:8px;margin-top:4px}
+.invoice-foot{margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
+@media (max-width:480px){.invoice-parties{grid-template-columns:1fr}.invoice-meta{text-align:left}}
+
+/* Template chips */
+.tmpls{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:4px}
+.tmplcard{border:1px solid var(--line);border-radius:10px;padding:12px;text-align:left;background:var(--panel);cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.tmplcard:hover{border-color:var(--accent)}
+.tmplcard b{font-size:14px}
+.tmplcard span{font-size:12px;color:var(--muted)}
+.tmplcard[aria-pressed="true"]{border-color:var(--accent);background:var(--panel-2);box-shadow:inset 0 0 0 1px var(--accent)}
+
+/* Preview panel (wizard) */
+.preview{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--panel);position:sticky;top:16px}
+.preview .ptag{font-size:12.5px;color:var(--accent);font-weight:700}
+.preview h3{margin:6px 0 2px}
+.wizgrid{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:26px;align-items:start}
+@media (max-width:820px){.wizgrid{grid-template-columns:1fr}.preview{position:static}}
+
+/* Login */
+.login{max-width:640px;margin:8vh auto;padding:0 20px}
+.login .mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent-2),var(--accent));margin-bottom:18px}
+.login h1{margin-bottom:8px}
+.roles{margin:26px 0 20px;display:grid;gap:10px}
+.rolebtn{display:grid;gap:2px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;cursor:pointer}
+.rolebtn:hover{border-color:var(--accent)}
+.rolebtn b{font-size:16px}
+.rolebtn span{color:var(--muted);font-size:13.5px}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(15,9,32,.55);display:flex;align-items:flex-end;justify-content:center;padding:0;z-index:20;overflow:auto}
+.modal{background:var(--ground);border-radius:16px 16px 0 0;max-width:560px;width:100%;padding:22px 22px calc(22px + env(safe-area-inset-bottom,0px));max-height:92vh;overflow:auto}
+.modal h2{margin-bottom:14px}
+@media (min-width:660px){
+  .overlay{align-items:center;padding:16px}
+  .modal{border-radius:16px;max-height:calc(100% - 32px)}
+}
+
+/* Ticket */
+.ticket{display:grid;grid-template-columns:minmax(0,1fr) 148px;background:linear-gradient(135deg,#221347,#171029);color:#EFE9FF;border-radius:16px;
+  -webkit-mask:radial-gradient(circle 11px at calc(100% - 148px) 0,#0000 97%,#000) top/100% 51% no-repeat,radial-gradient(circle 11px at calc(100% - 148px) 100%,#0000 97%,#000) bottom/100% 51% no-repeat;
+  mask:radial-gradient(circle 11px at calc(100% - 148px) 0,#0000 97%,#000) top/100% 51% no-repeat,radial-gradient(circle 11px at calc(100% - 148px) 100%,#0000 97%,#000) bottom/100% 51% no-repeat}
+.ticket .tmain{padding:22px 20px}
+.ticket .tmain small{color:#BBA9F5;display:block}
+.ticket .tmain h3{font-size:21px;margin:6px 0 16px;color:#fff}
+.ticket .tmain p{margin-bottom:10px}
+.ticket .tstub{border-left:2px dashed #4A3B7A;padding:18px 14px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;text-align:center;font-size:12px;color:#BBA9F5}
+.ticket .tstub svg{width:110px;height:110px;background:#fff;padding:6px;border-radius:6px}
+@media (max-width:480px){.ticket{grid-template-columns:1fr;-webkit-mask:none;mask:none}.ticket .tstub{border-left:0;border-top:2px dashed #4A3B7A}}
+
+/* Scan result */
+.scanres{padding:18px;border-radius:12px;font-weight:800;margin:0 0 18px;font-size:19px;text-align:center}
+.scanres.ok{background:var(--ok);color:#fff}
+.scanres.bad{background:var(--bad);color:#fff}
+.scanres.warn{background:var(--warn);color:#160B2E}
+
+/* Landing page mock */
+.landing{border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+.landing .hero{background:var(--grad);padding:44px 28px;text-align:center}
+.landing .hero span{font-size:13px;color:var(--accent);font-weight:800}
+.landing .hero h1{margin:8px 0 6px;font-size:30px}
+.landing .body{padding:26px 28px;background:var(--panel)}
+.landing .info{display:flex;flex-wrap:wrap;gap:18px 30px;margin:16px 0 22px}
+.landing .info div{display:flex;flex-direction:column}
+.landing .info b{font-size:14px}
+.landing .info span{font-size:12px;color:var(--muted)}
+
+/* Countdown badge */
+.cd{font-weight:700;font-size:13px}
+.cd.ok{color:var(--ok)} .cd.warn{color:var(--warn)} .cd.bad{color:var(--bad)}
+
+/* Toast */
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--ground);padding:12px 18px;border-radius:10px;max-width:min(560px,calc(100vw - 32px));opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:40}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast.bad{background:var(--bad);color:#fff}
+@media (max-width:820px){#toast{bottom:calc(70px + env(safe-area-inset-bottom,0px))}}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal-root"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+
+/* ---------- Demo-"heute" für Fristen/Countdowns ---------- */
+const TODAY = new Date('2026-10-15T00:00:00');
+const daysUntil = iso => Math.round((new Date(iso+'T00:00:00') - TODAY) / 86400000);
+
+/* ---------- Stammdaten ---------- */
+const dealers = [
+  {id:'d1', name:'Autohaus Müller', city:'München'},
+  {id:'d2', name:'Auto Schmidt', city:'Hamburg'},
+  {id:'d3', name:'Autohaus Weber', city:'Köln'},
+  {id:'d4', name:'Bauer Automobile', city:'Stuttgart'}
+];
+const ME = 'd1';
+const ROLE = {manager:'Event-Manager', admin:'Zentrale Administration', dealer:'Autohaus', checkin:'Check-in-Personal'};
+const ROLE_DESC = {
+  manager:'Legt Events an und steuert Kontingente und Phasen',
+  admin:'Prüft Gäste, exportiert Daten, verwaltet Nutzer',
+  dealer:'Reserviert und bestellt Tickets für Autohaus Müller',
+  checkin:'Prüft Tickets am Eingang'
+};
+const HOME = {manager:'m-events', admin:'a-check', dealer:'d-events', checkin:'c-scan'};
+const NAV = {
+  manager:[['m-events','Events'],['m-new','Anlegen']],
+  admin:[['a-check','Prüfung'],['a-export','Exporte'],['a-users','Nutzer']],
+  dealer:[['d-events','Events'],['d-invoices','Rechnungen']],
+  checkin:[['c-scan','Check-in']]
+};
+const PHASES = ['Reservierung','Bestellung','Geschlossen'];
+const TEMPLATES = [
+  {id:'golf', name:'Golf-Turnier', type:'Golf', total:120, mode:'fest', price:150, place:'Golfclub'},
+  {id:'fashion', name:'Fashion Event', type:'Fashion', total:80, mode:'pool', price:0, place:'Showroom / Halle'},
+  {id:'messe', name:'Messeauftritt', type:'Messe', total:200, mode:'pool', price:0, place:'Messegelände'},
+  {id:'drive', name:'Fahrerlebnis', type:'Fahrerlebnis', total:40, mode:'fest', price:90, place:'Rennstrecke'}
+];
+
+function makeState(){
+  return {
+    view:'login', role:null, eid:null, notes:true, cevent:'e2', scan:null, csv:null, n:6, check:{eid:'all', dealer:'all'},
+    wiz:{step:1, tmpl:null, name:'', type:'Golf', date:'', place:'', total:100, mode:'fest', selected:[], quota:{}, free:false, price:120, resDeadline:'', landing:false, slug:'', saveTmpl:false, tmplName:''},
+    events:[
+      {id:'e1', name:'Golf-Serie Süd: Auftakt', type:'Golf', date:'2027-05-15', place:'Golfclub Starnberg', mode:'fest', total:120, price:150, phase:'Bestellung', resOpen:true, resDeadline:'2027-01-31',
+        quota:{d1:40,d2:30,d3:30,d4:20}, reserved:{d1:10,d2:12,d3:6,d4:5}, ordered:{d1:0,d2:8,d3:20,d4:0}, waitlist:[], landing:{enabled:true, slug:'golf-sued-auftakt'}, desc:'Der Auftakt der diesjährigen Golf-Serie im Voralpenland, mit Turnier, Fahrzeugpräsentation und Abendveranstaltung.'},
+      {id:'e2', name:'Fashion Night München', type:'Fashion', date:'2027-03-12', place:'Halle 7, München', mode:'pool', total:80, price:0, phase:'Reservierung', resOpen:true, resDeadline:'2026-11-20',
+        quota:{}, reserved:{d2:6}, ordered:{d2:10,d3:14,d4:8}, waitlist:[], landing:{enabled:false, slug:'fashion-night-muenchen'}, desc:'Eine exklusive Modenschau mit anschließendem Get-together für geladene Gäste der Autohäuser.'},
+      {id:'e3', name:'Fahrerlebnis Hockenheim', type:'Fahrerlebnis', date:'2027-06-25', place:'Hockenheimring', mode:'pool', total:40, price:90, phase:'Reservierung', resOpen:true, resDeadline:'2026-12-15',
+        quota:{}, reserved:{d2:15,d3:12,d4:13}, ordered:{}, waitlist:[], landing:{enabled:true, slug:'fahrerlebnis-hockenheim'}, desc:'Exklusive Testfahrten auf der Grand-Prix-Strecke, begleitet von Instruktoren und der neuen Modellpalette.'}
+    ],
+    guests:[
+      {id:'g1', evId:'e2', dealerId:'d2', name:'Katrin Vogel', email:'k.vogel@example.de', consent:true, compliance:'freigegeben', checkedIn:false, n:1},
+      {id:'g2', evId:'e2', dealerId:'d2', name:'Jonas Reuter', email:'j.reuter@example.de', consent:true, compliance:'zu prüfen', checkedIn:false, n:2},
+      {id:'g3', evId:'e2', dealerId:'d3', name:'Sabine Kolb', email:'s.kolb@example.de', consent:true, compliance:'zu prüfen', checkedIn:false, n:3},
+      {id:'g4', evId:'e2', dealerId:'d3', name:'Markus Lang', email:'m.lang@example.de', consent:true, compliance:'freigegeben', checkedIn:false, n:4},
+      {id:'g5', evId:'e2', dealerId:'d3', name:'Elena Roth', email:'e.roth@example.de', consent:true, compliance:'freigegeben', checkedIn:false, n:5}
+    ]
+  };
+}
+let state = makeState();
+let pendingConfirm = null;
+
+/* ---------- Hilfsfunktionen ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = iso => iso ? iso.split('-').reverse().join('.') : '';
+const eur = n => n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' €';
+const dname = id => dealers.find(d => d.id === id).name;
+const ev = id => state.events.find(e => e.id === id);
+const sum = o => Object.values(o).reduce((a,b) => a + b, 0);
+const used = (e,d) => (e.reserved[d]||0) + (e.ordered[d]||0);
+const poolUsed = e => dealers.reduce((s,d) => s + used(e,d.id), 0);
+const freeFor = (e,d) => e.mode === 'fest' ? Math.max(0,(e.quota[d]||0) - used(e,d)) : Math.max(0, e.total - poolUsed(e));
+const totalFree = e => Math.max(0, e.total - poolUsed(e));
+const ticketNo = g => `TS-${g.evId.toUpperCase()}-${String(g.n).padStart(4,'0')}`;
+const guestsOf = (eid,d) => state.guests.filter(g => g.evId === eid && g.dealerId === d);
+const slugify = s => (s||'').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+
+function toast(msg, kind){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'show ' + (kind||'');
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => { t.className = ''; }, 4600);
+}
+
+function phaseChip(p){
+  if(p === 'Reservierung') return '<span class="chip info">Reservierung offen</span>';
+  if(p === 'Bestellung') return '<span class="chip ok">Bestellung offen</span>';
+  return '<span class="chip neutral">Geschlossen</span>';
+}
+function compChip(c){
+  if(c === 'freigegeben') return '<span class="chip ok">Freigegeben</span>';
+  if(c === 'abgelehnt') return '<span class="chip bad">Abgelehnt</span>';
+  return '<span class="chip warn">Prüfung offen</span>';
+}
+function modeText(e){ return e.mode === 'fest' ? 'Festes Kontingent je Autohaus' : 'Gemeinsamer Pool'; }
+function countdown(iso){
+  const d = daysUntil(iso);
+  if(d < 0) return `<span class="cd bad">Frist abgelaufen</span>`;
+  if(d === 0) return `<span class="cd bad">Frist läuft heute ab</span>`;
+  if(d <= 14) return `<span class="cd warn">Noch ${d} Tag(e)</span>`;
+  return `<span class="cd ok">Noch ${d} Tage</span>`;
+}
+
+function advanceWaitlist(e){
+  const msgs = [];
+  let changed = true;
+  while(changed){
+    changed = false;
+    for(let i=0;i<e.waitlist.length;i++){
+      const w = e.waitlist[i];
+      if(freeFor(e,w.dealerId) >= w.qty){
+        e.reserved[w.dealerId] = (e.reserved[w.dealerId]||0) + w.qty;
+        e.waitlist.splice(i,1);
+        msgs.push(`Warteliste: ${w.qty} Ticket(s) für ${dname(w.dealerId)} sind nachgerückt und reserviert.`);
+        changed = true;
+        break;
+      }
+    }
+  }
+  return msgs;
+}
+
+function qr(seed){
+  let h = 2166136261;
+  for(const ch of seed){ h ^= ch.charCodeAt(0); h = Math.imul(h,16777619); }
+  const rnd = () => { h += 0x6D2B79F5; let t = Math.imul(h ^ h>>>15, 1|h); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; };
+  const N = 25, cell = 4;
+  const finder = (x,y) => {
+    const fx = (x<7&&y<7)||(x>=N-7&&y<7)||(x<7&&y>=N-7);
+    if(!fx) return null;
+    const ax = x<7 ? x : x-(N-7), ay = y<7 ? y : y-(N-7);
+    const edge = ax===0||ax===6||ay===0||ay===6;
+    const core = ax>=2&&ax<=4&&ay>=2&&ay<=4;
+    return edge || core;
+  };
+  let r = '';
+  for(let y=0;y<N;y++) for(let x=0;x<N;x++){
+    const f = finder(x,y);
+    const on = f === null ? rnd() > .52 : f;
+    if(on) r += `<rect x="${x*cell}" y="${y*cell}" width="${cell}" height="${cell}"/>`;
+  }
+  return `<svg viewBox="0 0 ${N*cell} ${N*cell}" role="img" aria-label="QR-Code des Tickets" fill="#1B0F38">${r}</svg>`;
+}
+
+/* ---------- Bestätigungsdialog (generisch) ---------- */
+function askConfirm(title, text, confirmLabel, onYes){
+  pendingConfirm = onYes;
+  openModal(`<h2>${esc(title)}</h2><p>${text}</p>
+    <div class="row end" style="margin-top:18px">
+      <button class="btn" type="button" data-act="close">Abbrechen</button>
+      <button class="btn primary" type="button" data-act="confirm-yes">${esc(confirmLabel)}</button>
+    </div>`);
+}
+
+/* ---------- Hinweise je Screen ---------- */
+const NOTES = {
+  login:{z:'Rollenwahl als Einstieg.', v:'Eigene Anmeldung statt Single Sign-on; die Rollenwahl ersetzt die Benutzerverwaltung.', w:'Single Sign-on über das Marketingportal folgt in Tranche 2.'},
+  'm-events':{z:'Alle Events mit Phase, Kontingentmodus und Auslastung.', v:'Drei Beispiel-Events; keine Suche und kein Filter.', w:'Archiv und Auswertungen (Reporting, Tranche 2).'},
+  'm-new':{z:'Vierstufiger Assistent mit Vorlagen; Autohäuser werden per Suche zum Event hinzugefügt; Vorschau, wie das Autohaus das Event sieht; im letzten Schritt kann das Event als neue, wiederverwendbare Vorlage gespeichert werden.', v:'Vier Autohäuser statt rund 300 in der Suche; neue Vorlagen gelten nur für die laufende Sitzung, nicht dauerhaft gespeichert.', w:'Vorlagen dauerhaft verwalten (umbenennen, löschen); Übernahme eines kompletten Events aus dem Vorjahr statt Einzelwerte.'},
+  'm-event':{z:'Steuerung eines Events: Phasen, Kontingent je Autohaus, Warteliste, optionale Landingpage. Beim Start der Bestellphase entscheidet der Event-Manager explizit, ob die Reservierung parallel offen bleibt oder geschlossen wird, und kann eine offen gebliebene Reservierung später separat schließen.', v:'Phasenwechsel und Fristablauf per Knopfdruck statt zeitgesteuert.', w:'Erinnerungen und automatische Benachrichtigungen.'},
+  landing:{z:'Optionale öffentliche Eventseite für zwei Zielgruppen: eingeladene Gäste (Information) und Autohäuser (Reservieren über Anmeldung).', v:'Statischer Inhalt ohne eigenes Formular.', w:'Eigenes Corporate Design je Marke, Mehrsprachigkeit; Gast-Selbstregistrierung über diese Seite ist als spätere Erweiterung vorgemerkt (siehe 04 Erweiterungsideen).'},
+  'd-events':{z:'Events mit Phase und eigenem Stand (bestellt, reserviert, frei).', v:'Ein angemeldetes Autohaus; die anderen erscheinen als Fremdbelegung.', w:'Suche und Filter über rund 100 Events; Nutzerverwaltung des Autohauses.'},
+  'd-event':{z:'Ablaufleiste, Reservieren (solange der Event-Manager die Reservierung nicht geschlossen hat – möglich in der Reservierungsphase und, falls vom Manager offen gelassen, auch während der Bestellphase), Teilbestellung sowie Teil-Rückgabe einer Reservierung, Gäste erfassen, Ticket anzeigen; Bestellen und Zurückgeben fragen zur Sicherheit nach.', v:'Keine Stornierung bereits bestellter Einzeltickets nach der Bestellung; Warteliste rückt streng nach Reihenfolge nach, nicht nach Kontingent-Präferenz.', w:'Stornierung einzelner bereits bestellter Tickets, Sammelimport von Gästen, Begleitpersonen.'},
+  'd-invoices':{z:'Rechnungen je Event einsehen; bei kostenlosen Events entsteht keine.', v:'Eine Rechnung je Event und Autohaus, über alle Bestellungen dieses Autohauses aufsummiert; ob stattdessen je Bestellung eine eigene Rechnung sinnvoller ist, ist als offene Frage in 02 Anforderungsanalyse vermerkt.', w:'Rechnungsstellung, Umsatzsteuerausweis und Zahlungsabwicklung liegen im System des Kunden; PDF-Abruf folgt mit der Schnittstelle (Tranche 3).'},
+  'a-check':{z:'Compliance-Status je Gast, Freigabe oder Ablehnung.', v:'Manuelle Prüfung durch die Zentrale (Annahme für Tranche 1).', w:'Automatische Prüfung über Einwilligungs- und Compliance-Systeme des Kunden (Tranche 3).'},
+  'a-export':{z:'Aufbereitete Gäste- und Rechnungsdaten als Export.', v:'CSV-Vorschau statt Dateidownload.', w:'Schnittstellen zu CRM und Rechnungssystem (Tranche 3).'},
+  'a-users':{z:'Nutzer und Rollen der Plattform.', v:'Statische Beispieldaten.', w:'Anlegen und Sperren von Nutzern; Anbindung über Single Sign-on (Tranche 2).'},
+  'c-scan':{z:'Ticket prüfen und Gast einchecken, inklusive Fehlerfälle. Zielbild: ein QR-Code-Handscanner tippt den gescannten Code wie eine Tastatur ins Eingabefeld, kein kamerabasiertes Scannen im Browser.', v:'Im Prototyp auch manuelle Eingabe oder Klick auf „Scan simulieren“ statt echtem Scanner-Gerät.', w:'Offline-Betrieb bei schwacher Verbindung (zu klären) und Gerätemanagement für die Scanner-Hardware.'}
+};
+
+/* ---------- Shell ---------- */
+function render(){
+  const app = $('#app');
+  if(state.view === 'login'){ app.innerHTML = loginView(); return; }
+  const navKey = state.view === 'm-event' ? 'm-events' : state.view === 'd-event' ? 'd-events' : state.view === 'landing' ? 'm-events' : state.view;
+  const nav = NAV[state.role].map(([v,l]) => `<button class="navbtn" data-act="nav" data-view="${v}" ${v===navKey?'aria-current="page"':''}><span class="ico"></span>${l}</button>`).join('');
+  const bnav = NAV[state.role].map(([v,l]) => `<button data-act="nav" data-view="${v}" ${v===navKey?'aria-current="page"':''}><span class="dot"></span>${l}</button>`).join('');
+  const roleOpts = Object.keys(ROLE).map(r => `<option value="${r}" ${r===state.role?'selected':''}>${ROLE[r]}</option>`).join('');
+  const n = NOTES[state.view];
+  const notes = state.notes && n ? `<aside class="notes" aria-label="Prototyp-Hinweis"><b>Prototyp-Hinweis</b><dl><dt>Gezeigt</dt><dd>${n.z}</dd><dt>Vereinfacht</dt><dd>${n.v}</dd><dt>Weggelassen</dt><dd>${n.w}</dd></dl></aside>` : '';
+  app.innerHTML = `
+    <header class="top">
+      <span class="brand"><span class="mark"></span>EventDrive</span>
+      <label class="small muted">Rolle <select data-change="role" aria-label="Rolle wechseln">${roleOpts}</select></label>
+      <button class="btn sm" data-act="notes" aria-pressed="${state.notes}">Hinweise ${state.notes?'aus':'ein'}</button>
+      <button class="btn sm quiet" data-act="reset">Demo zurücksetzen</button>
+    </header>
+    <div class="shell">
+      <nav class="side" aria-label="Navigation">
+        <div class="who">Angemeldet als<b>${ROLE[state.role]}</b>${state.role==='dealer'?dname(ME):''}</div>
+        ${nav}
+      </nav>
+      <main class="main">${notes}${viewHTML()}</main>
+    </div>
+    <nav class="bottomnav" aria-label="Navigation">${bnav}</nav>`;
+  if(state.view === 'm-new') updateWizSum();
+}
+
+function viewHTML(){
+  switch(state.view){
+    case 'm-events': return mEvents();
+    case 'm-new': return mNew();
+    case 'm-event': return mEvent();
+    case 'landing': return landingView();
+    case 'd-events': return dEvents();
+    case 'd-event': return dEvent();
+    case 'd-invoices': return dInvoices();
+    case 'a-check': return aCheck();
+    case 'a-export': return aExport();
+    case 'a-users': return aUsers();
+    case 'c-scan': return cScan();
+  }
+  return '';
+}
+
+function loginView(){
+  const n = NOTES.login;
+  const roles = Object.keys(ROLE).map(r => `<button class="rolebtn" data-act="login" data-role="${r}"><b>${ROLE[r]}</b><span>${ROLE_DESC[r]}</span></button>`).join('');
+  return `<div class="login">
+    <div class="mark"></div>
+    <h1>EventDrive</h1>
+    <p class="muted">Tickets für zentrale Veranstaltungen reservieren, bestellen und verwalten.</p>
+    <div class="roles" role="group" aria-label="Rolle wählen">${roles}</div>
+    <button class="btn" disabled>Mit dem Marketingportal anmelden</button>
+    <p class="small muted" style="margin-top:8px">Single Sign-on steht ab Tranche 2 zur Verfügung. Bis dahin melden sich Nutzer mit eigenen Zugangsdaten an.</p>
+    ${state.notes ? `<aside class="notes" style="margin-top:32px"><b>Prototyp-Hinweis</b><dl><dt>Gezeigt</dt><dd>${n.z}</dd><dt>Vereinfacht</dt><dd>${n.v}</dd><dt>Weggelassen</dt><dd>${n.w}</dd></dl></aside>` : ''}
+  </div>`;
+}
+
+/* ---------- Kontingentbalken ---------- */
+function barMine(e){
+  const mo = e.ordered[ME]||0, mr = e.reserved[ME]||0;
+  const other = poolUsed(e) - mo - mr;
+  const p = x => (100 * x / e.total).toFixed(2);
+  return `<div class="bar" role="img" aria-label="${mo} bestellt, ${mr} reserviert, ${other} von anderen Autohäusern belegt, ${totalFree(e)} frei"><i class="s-mine" style="width:${p(mo)}%"></i><i class="s-res" style="width:${p(mr)}%"></i><i class="s-other" style="width:${p(other)}%"></i></div>`;
+}
+function barAll(e){
+  const o = sum(e.ordered), r = sum(e.reserved);
+  const p = x => (100 * x / e.total).toFixed(2);
+  return `<div class="bar" role="img" aria-label="${o} bestellt, ${r} reserviert, ${totalFree(e)} frei"><i class="s-ord" style="width:${p(o)}%"></i><i class="s-resall" style="width:${p(r)}%"></i></div>`;
+}
+
+/* ---------- Event-Manager: Liste ---------- */
+function mEvents(){
+  const rows = state.events.map(e => `<tr>
+    <td data-label="Event"><div class="name">${esc(e.name)}</div><div class="sub">${fmt(e.date)}, ${esc(e.place)}</div></td>
+    <td data-label="Phase">${phaseChip(e.phase)}</td>
+    <td data-label="Kontingent">${modeText(e)}<div class="sub">${e.price>0?eur(e.price)+' je Ticket':'Kostenlos'}</div></td>
+    <td data-label="Auslastung" class="cellbar block">${barAll(e)}<div class="sub">${sum(e.ordered)} bestellt, ${sum(e.reserved)} reserviert, ${totalFree(e)} frei von ${e.total}</div></td>
+    <td data-label=""><button class="btn sm" data-act="openEvent" data-id="${e.id}" data-view="m-event">Steuern</button></td>
+  </tr>`).join('');
+  return `<div class="head"><div><h1>Events</h1><p class="muted">Alle zentralen Veranstaltungen und ihr Buchungsstand.</p></div>
+    <button class="btn primary" data-act="nav" data-view="m-new">Event anlegen</button></div>
+    <div class="scroll"><table class="tbl responsive"><thead><tr><th>Event</th><th>Phase</th><th>Kontingent und Preis</th><th>Auslastung</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="legend"><span class="l-ord">Bestellt</span><span class="l-resall">Reserviert</span><span class="l-free">Frei</span></div>`;
+}
+
+/* ---------- Event-Manager: Assistent ---------- */
+function wizStepLabel(n, title){
+  const cur = state.wiz.step;
+  const cls = n < cur ? 'done' : n === cur ? 'current' : '';
+  return `<li class="${cls}"><b>${n}. ${title}</b></li>`;
+}
+function wizPreview(){
+  const w = state.wiz;
+  const price = w.free ? 'Kostenlos' : (w.price ? eur(parseFloat(w.price)) + ' je Ticket' : '–');
+  return `<div class="preview"><div class="ptag">So sieht ein Autohaus dieses Event</div>
+    <h3>${w.name ? esc(w.name) : 'Name des Events'}</h3>
+    <p class="muted small">${w.date?fmt(w.date):'Datum offen'}${w.place?', '+esc(w.place):''}</p>
+    <div class="sec" style="padding-top:14px"><div class="row" style="gap:14px"><span class="chip info">Reservierung offen</span></div>
+      <p class="small muted" style="margin-top:10px">${w.mode==='fest' ? 'Festes Kontingent je Autohaus' : 'Gemeinsamer Pool über alle Autohäuser'}</p>
+      <p class="small muted">${price}</p>
+      ${w.resDeadline ? `<p class="small muted">Reservierung verfällt am ${fmt(w.resDeadline)}</p>` : ''}
+      ${w.landing ? `<p class="small" style="color:var(--accent);margin-top:8px">Mit öffentlicher Landingpage</p>` : ''}
+    </div></div>`;
+}
+function mNew(){
+  const w = state.wiz;
+  const steps = `<ol class="steps">${wizStepLabel(1,'Grunddaten')}${wizStepLabel(2,'Kontingent')}${wizStepLabel(3,'Preis & Fristen')}${wizStepLabel(4,'Prüfen')}</ol>`;
+  let body = '';
+  if(w.step === 1){
+    const tmpls = TEMPLATES.map(t => `<button type="button" class="tmplcard" data-act="tmpl" data-id="${t.id}" aria-pressed="${w.tmpl===t.id}"><b>${esc(t.name)}</b><span>${t.total} Tickets · ${t.mode==='fest'?'fest':'Pool'}</span></button>`).join('');
+    body = `<h3 style="margin-bottom:10px">Vorlage (optional)</h3><div class="tmpls">${tmpls}</div>
+      <div class="form" style="margin-top:18px">
+        <label>Name des Events<input type="text" id="w-name" value="${esc(w.name)}" required></label>
+        <label>Kategorie<select id="w-type">${['Golf','Fashion','Messe','Fahrerlebnis'].map(t=>`<option ${t===w.type?'selected':''}>${t}</option>`).join('')}</select></label>
+        <label>Datum<input type="date" id="w-date" value="${w.date}" required></label>
+        <label>Ort<input type="text" id="w-place" value="${esc(w.place)}"></label>
+      </div>`;
+  } else if(w.step === 2){
+    const avail = dealers.filter(d => !w.selected.includes(d.id));
+    const options = avail.map(d => `<option value="${esc(d.name)}">`).join('');
+    const items = w.selected.length
+      ? w.selected.map(id => `<div class="dealeritem"><span class="dname">${esc(dname(id))}</span>
+          <input class="q" type="number" min="0" data-q="${id}" value="${w.quota[id] ?? 0}" aria-label="Kontingent für ${esc(dname(id))}">
+          <button type="button" class="rm" data-act="dealerRemove" data-id="${id}" aria-label="${esc(dname(id))} entfernen">Entfernen</button></div>`).join('')
+      : '<p class="dealerempty">Noch kein Autohaus hinzugefügt.</p>';
+    body = `<div class="form">
+      <label>Gesamtkontingent (Tickets)<input type="number" id="w-total" min="1" value="${w.total}" required></label>
+      <fieldset><legend>Kontingentmodus</legend>
+        <label class="choice"><input type="radio" name="w-mode" value="fest" ${w.mode==='fest'?'checked':''}><span><b>Festes Kontingent je Autohaus</b>Jedes Autohaus erhält eine feste Anzahl Tickets.</span></label>
+        <label class="choice" style="margin-top:8px"><input type="radio" name="w-mode" value="pool" ${w.mode==='pool'?'checked':''}><span><b>Gemeinsamer Pool</b>Alle Autohäuser bedienen sich aus demselben Vorrat, wer zuerst reserviert, erhält Tickets.</span></label>
+      </fieldset>
+      <div class="${w.mode!=='fest'?'hidden':''}" id="w-quota">
+        <fieldset><legend>Teilnehmende Autohäuser</legend>
+          <div class="dealerpick">
+            <div class="addrow">
+              <input type="text" id="w-dealer-search" list="w-dealer-list" placeholder="Autohaus suchen und hinzufügen…" autocomplete="off" ${avail.length===0?'disabled':''}>
+              <datalist id="w-dealer-list">${options}</datalist>
+              <button type="button" class="btn" data-act="dealerAdd" ${avail.length===0?'disabled':''}>Hinzufügen</button>
+            </div>
+            ${items}
+          </div>
+        </fieldset>
+        <div class="small" id="w-qsum" style="margin-top:10px"></div>
+        <p class="small muted" style="margin-top:6px">In echt stehen hier rund 300 Autohäuser zur Auswahl; die Suche filtert dann wie hier bereits angelegt.</p>
+      </div>
+    </div>`;
+  } else if(w.step === 3){
+    body = `<div class="form">
+      <fieldset><legend>Preis</legend>
+        <label class="check"><input type="checkbox" id="w-free" ${w.free?'checked':''}><span>Kostenloses Event (keine Rechnung)</span></label>
+        <label style="margin-top:8px">Preis je Ticket in Euro (netto)<input type="number" id="w-price" min="0" step="1" value="${w.price}" ${w.free?'disabled':''}></label>
+      </fieldset>
+      <label>Reservierungen verfallen am<input type="date" id="w-deadline" value="${w.resDeadline}"></label>
+      <fieldset><legend>Öffentliche Landingpage (optional)</legend>
+        <label class="check"><input type="checkbox" id="w-landing" ${w.landing?'checked':''}><span>Eigene Landingpage für dieses Event aktivieren, z.&nbsp;B. zum Verlinken aus Einladungen</span></label>
+        <label style="margin-top:8px" id="w-sluglabel" class="${w.landing?'':'hidden'}">Adresse<input type="text" id="w-slug" value="${esc(w.slug)}" placeholder="mein-event"></label>
+      </fieldset>
+    </div>`;
+  } else {
+    const okQuota = w.mode!=='fest' || sum(w.quota) <= parseInt(w.total,10);
+    body = `<div class="msg ${okQuota?'ok':'bad'}">${okQuota ? 'Alle Angaben sind vollständig. Bereit zum Anlegen.' : 'Die Summe der Kontingente übersteigt das Gesamtkontingent. Bitte in Schritt 2 korrigieren.'}</div>
+      <table class="tbl"><tbody>
+        <tr><td class="sub">Name</td><td class="name">${esc(w.name)||'–'}</td></tr>
+        <tr><td class="sub">Kategorie</td><td>${esc(w.type)}</td></tr>
+        <tr><td class="sub">Datum / Ort</td><td>${w.date?fmt(w.date):'–'}, ${esc(w.place)||'–'}</td></tr>
+        <tr><td class="sub">Kontingent</td><td>${w.total} Tickets, ${modeText({mode:w.mode})}</td></tr>
+        <tr><td class="sub">Preis</td><td>${w.free ? 'Kostenlos' : eur(parseFloat(w.price)||0)+' je Ticket (netto)'}</td></tr>
+        <tr><td class="sub">Verfallsfrist</td><td>${w.resDeadline?fmt(w.resDeadline):'–'}</td></tr>
+        <tr><td class="sub">Landingpage</td><td>${w.landing ? 'Aktiv unter /events/'+esc(w.slug||slugify(w.name)) : 'Nicht aktiv'}</td></tr>
+      </tbody></table>
+      <div class="form" style="margin-top:16px">
+        <fieldset>
+          <label class="check"><input type="checkbox" id="w-savetmpl" ${w.saveTmpl?'checked':''}><span>Diese Angaben als neue Vorlage speichern, für künftige Events wiederverwendbar</span></label>
+          <label style="margin-top:8px" id="w-tmplnamelabel" class="${w.saveTmpl?'':'hidden'}">Vorlagenname<input type="text" id="w-tmplname" value="${esc(w.tmplName || w.name)}" placeholder="z. B. Fahrerlebnis Standard"></label>
+        </fieldset>
+      </div>`;
+  }
+  const nav = `<div class="row" style="margin-top:20px">
+    ${w.step>1?'<button class="btn" type="button" data-act="wizback">Zurück</button>':'<button class="btn" type="button" data-act="nav" data-view="m-events">Abbrechen</button>'}
+    ${w.step<4?'<button class="btn primary" type="button" data-act="wiznext">Weiter</button>':'<button class="btn primary" type="button" data-act="wizsubmit">Event anlegen</button>'}
+  </div><p class="msg warn" id="formerr" hidden></p>`;
+  return `<div class="head"><div><h1>Event anlegen</h1><p class="muted">Kontingentmodus, Preis und Fristen gelten für dieses Event.</p></div></div>
+    ${steps}
+    <div class="wizgrid"><div>${body}${nav}</div>${wizPreview()}</div>`;
+}
+
+
+/* ---------- Event-Manager: Steuerung ---------- */
+function mEvent(){
+  const e = ev(state.eid);
+  const dealerRows = e.mode === 'fest' ? dealers.filter(d => (e.quota[d.id]||0) > 0) : dealers;
+  const rows = dealerRows.map(d => e.mode === 'fest'
+    ? `<tr><td data-label="Autohaus" class="name">${esc(d.name)}</td><td data-label="Kontingent" class="num">${e.quota[d.id]||0}</td><td data-label="Reserviert" class="num">${e.reserved[d.id]||0}</td><td data-label="Bestellt" class="num">${e.ordered[d.id]||0}</td><td data-label="Frei" class="num">${freeFor(e,d.id)}</td></tr>`
+    : `<tr><td data-label="Autohaus" class="name">${esc(d.name)}</td><td data-label="Reserviert" class="num">${e.reserved[d.id]||0}</td><td data-label="Bestellt" class="num">${e.ordered[d.id]||0}</td></tr>`).join('');
+  const head = e.mode === 'fest'
+    ? '<tr><th>Autohaus</th><th class="num">Kontingent</th><th class="num">Reserviert</th><th class="num">Bestellt</th><th class="num">Frei</th></tr>'
+    : '<tr><th>Autohaus</th><th class="num">Reserviert</th><th class="num">Bestellt</th></tr>';
+  const wl = e.waitlist.length ? `<ol>${e.waitlist.map(w => `<li>${esc(dname(w.dealerId))}: ${w.qty} Ticket(s)</li>`).join('')}</ol>` : '<p class="muted">Keine Einträge.</p>';
+  const resChip = e.phase !== 'Geschlossen' ? (e.resOpen ? '<span class="chip info">Reservierung offen</span>' : '<span class="chip neutral">Reservierung geschlossen</span>') : '';
+  return `<div class="head"><div><h1>${esc(e.name)}</h1><p class="muted">${fmt(e.date)}, ${esc(e.place)}</p></div>
+    <button class="btn" data-act="nav" data-view="m-events">Zurück zur Übersicht</button></div>
+    <div class="row" style="gap:18px">${phaseChip(e.phase)}${e.phase==='Bestellung'?resChip:''}<span>${modeText(e)}</span><span>${e.price>0?eur(e.price)+' je Ticket (netto)':'Kostenlos'}</span>${e.phase==='Reservierung'?countdown(e.resDeadline):''}</div>
+    <div class="facts"><div><b>${sum(e.ordered)}</b><span>bestellt</span></div><div><b>${sum(e.reserved)}</b><span>reserviert</span></div><div><b>${totalFree(e)}</b><span>frei von ${e.total}</span></div></div>
+    ${barAll(e)}
+    <div class="legend"><span class="l-ord">Bestellt</span><span class="l-resall">Reserviert</span><span class="l-free">Frei</span></div>
+    <div class="sec"><h3>${e.mode==='fest'?'Kontingent je Autohaus':'Belegung je Autohaus'}</h3><div class="scroll"><table class="tbl responsive"><thead>${head}</thead><tbody>${rows}</tbody></table></div></div>
+    <div class="sec"><h3>Warteliste</h3>${wl}</div>
+    <div class="sec"><h3>Öffentliche Landingpage</h3>
+      ${e.landing.enabled
+        ? `<p>Aktiv unter <code>/events/${esc(e.landing.slug)}</code>.</p><div class="row" style="margin-top:10px"><button class="btn" data-act="openLanding" data-id="${e.id}">Landingpage ansehen</button><button class="btn quiet" data-act="landingOff" data-id="${e.id}">Deaktivieren</button></div>`
+        : `<p class="muted">Für dieses Event ist keine eigene Seite aktiv.</p><button class="btn" style="margin-top:10px" data-act="landingOn" data-id="${e.id}">Landingpage aktivieren</button>`}
+    </div>
+    <div class="sec"><h3>Phase und Fristen</h3>
+      <p class="muted" style="margin-bottom:12px">Nicht bestellte Reservierungen verfallen am ${fmt(e.resDeadline)}.</p>
+      ${e.phase === 'Reservierung' ? `
+      <p class="small muted" style="margin-bottom:8px">Beim Start der Bestellphase legen Sie fest, ob Autohäuser parallel weiter reservieren können.</p>
+      <div class="row">
+        <button class="btn primary" data-act="phaseOrderOpen" data-id="${e.id}">Bestellphase starten, Reservierung bleibt offen</button>
+        <button class="btn" data-act="phaseOrderClose" data-id="${e.id}">Bestellphase starten und Reservierung schließen</button>
+      </div>` : e.phase === 'Bestellung' ? `
+      <div class="row">
+        ${e.resOpen ? `<button class="btn" data-act="closeRes" data-id="${e.id}">Reservierung jetzt schließen</button>` : ''}
+        <button class="btn primary" data-act="phase" data-id="${e.id}">Event schließen</button>
+      </div>` : ''}
+      <div class="row" style="margin-top:10px">
+        <button class="btn quiet" data-act="expire" data-id="${e.id}">Frist ablaufen lassen (Demo)</button>
+      </div></div>`;
+}
+
+function landingView(){
+  const e = ev(state.eid);
+  return `<div class="head"><div><h1 style="font-size:20px">Vorschau: Öffentliche Landingpage</h1><p class="muted">Diese Seite hat zwei Zielgruppen: eingeladene Gäste und Autohäuser. Sie ist öffentlich erreichbar, z. B. verlinkt aus einer E-Mail-Einladung.</p></div>
+    <button class="btn" data-act="nav" data-view="m-event">Zurück zur Steuerung</button></div>
+    <div class="landing"><div class="hero"><span>${esc(e.type)}</span><h1>${esc(e.name)}</h1><p class="muted">${fmt(e.date)} · ${esc(e.place)}</p></div>
+      <div class="body">
+        <p>${esc(e.desc||'')}</p>
+        <div class="info">
+          <div><b>${fmt(e.date)}</b><span>Datum</span></div>
+          <div><b>${esc(e.place)}</b><span>Ort</span></div>
+          <div><b>${e.price>0?eur(e.price):'Kostenlos'}</b><span>Teilnahme</span></div>
+        </div>
+        <div class="row" style="margin-top:24px;align-items:flex-start;gap:28px;flex-wrap:wrap">
+          <div style="flex:1;min-width:220px">
+            <h3 style="margin-bottom:6px">Für eingeladene Gäste</h3>
+            <p class="small muted">Die Reservierung übernimmt das Autohaus, von dem Sie eingeladen wurden. Ihr digitales Ticket erhalten Sie, sobald es dort für Sie angelegt und geprüft wurde.</p>
+          </div>
+          <div style="flex:1;min-width:220px">
+            <h3 style="margin-bottom:6px">Für Autohäuser</h3>
+            <button class="btn primary" data-act="landingCta">Anmelden und reservieren</button>
+            <p class="small muted" style="margin-top:8px">Führt zur Anmeldung im EventDrive als Autohaus.</p>
+          </div>
+        </div>
+      </div></div>`;
+}
+
+/* ---------- Autohaus ---------- */
+function dEvents(){
+  const rows = state.events.map(e => {
+    const mo = e.ordered[ME]||0, mr = e.reserved[ME]||0;
+    return `<tr>
+      <td data-label="Event"><div class="name">${esc(e.name)}</div><div class="sub">${fmt(e.date)}, ${esc(e.place)}</div></td>
+      <td data-label="Phase">${phaseChip(e.phase)}</td>
+      <td data-label="Ihr Stand" class="cellbar block">${barMine(e)}<div class="sub">Sie: ${mo} bestellt, ${mr} reserviert. Für Sie frei: ${freeFor(e,ME)}</div></td>
+      <td data-label="Preis">${e.price>0?eur(e.price):'Kostenlos'}</td>
+      <td data-label=""><button class="btn sm" data-act="openEvent" data-id="${e.id}" data-view="d-event">Öffnen</button></td>
+    </tr>`; }).join('');
+  return `<div class="head"><div><h1>Events</h1><p class="muted">Reservieren Sie Tickets und bestellen Sie sie verbindlich.</p></div></div>
+    <div class="scroll"><table class="tbl responsive"><thead><tr><th>Event</th><th>Phase</th><th>Ihr Stand</th><th>Preis netto</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="legend"><span class="l-mine">Bestellt von Ihnen</span><span class="l-res">Reserviert von Ihnen</span><span>Andere Autohäuser</span><span class="l-free">Frei</span></div>`;
+}
+
+function stepIndicator(r, o, phase){
+  const step = o>0 ? 3 : r>0 ? 2 : 1;
+  const items = [['Reservieren',1],['Bestellen',2],['Gäste & Ticket',3]];
+  return `<ol class="steps">${items.map(([label,n]) => `<li class="${n<step?'done':n===step?'current':''}"><b>${n}. ${label}</b></li>`).join('')}</ol>`;
+}
+
+function dEvent(){
+  const e = ev(state.eid), d = ME;
+  const r = e.reserved[d]||0, o = e.ordered[d]||0, free = freeFor(e,d);
+  const wl = e.waitlist.filter(w => w.dealerId === d);
+  const modeLine = e.mode === 'fest'
+    ? `Festes Kontingent: ${e.quota[d]||0} Tickets für Ihr Autohaus`
+    : `Gemeinsamer Pool: ${totalFree(e)} von ${e.total} Tickets frei`;
+
+  const canReserve = e.phase !== 'Geschlossen' && e.resOpen;
+  let reserve = '';
+  if(canReserve && free > 0){
+    reserve = `<div class="row"><div class="stepper" id="qty-reserve-stepper" data-max="${free}">
+        <button type="button" data-act="qtyReserve" data-dir="-1" aria-label="Weniger">−</button>
+        <output id="qty-reserve-out">1</output>
+        <button type="button" data-act="qtyReserve" data-dir="1" aria-label="Mehr">+</button>
+      </div><button class="btn primary" data-act="reserve" data-id="${e.id}">Reservieren</button></div>
+      <p class="small muted" style="margin-top:8px">Bis zu ${free} Tickets für Sie verfügbar, unverbindlich. ${e.phase==='Reservierung' ? countdown(e.resDeadline) : 'In der Bestellphase reserviert, ohne eigene Verfallsfrist in diesem Prototyp.'}</p>`;
+  } else if(canReserve){
+    reserve = `<p class="msg warn">Das Kontingent ist ausgeschöpft. Sie können sich auf die Warteliste setzen und werden automatisch berücksichtigt, sobald Tickets frei werden.</p>
+      <div class="row"><div class="stepper" id="qty-reserve-stepper" data-max="99">
+        <button type="button" data-act="qtyReserve" data-dir="-1" aria-label="Weniger">−</button>
+        <output id="qty-reserve-out">2</output>
+        <button type="button" data-act="qtyReserve" data-dir="1" aria-label="Mehr">+</button>
+      </div><button class="btn" data-act="waitlist" data-id="${e.id}">Auf Warteliste setzen</button></div>`;
+  } else if(e.phase === 'Geschlossen'){
+    reserve = `<p class="muted">Das Event ist geschlossen, es können keine weiteren Tickets mehr reserviert werden.</p>`;
+  } else {
+    reserve = `<p class="muted">Die Reservierungsphase ist beendet. Es können keine weiteren Tickets mehr reserviert werden, bereits reservierte Tickets können Sie aber noch bestellen oder zurückgeben.</p>`;
+  }
+  const wlHtml = wl.length ? `<div class="msg">${wl.map(w => `Warteliste: ${w.qty} Ticket(s), Platz ${e.waitlist.indexOf(w)+1} von ${e.waitlist.length}`).join('<br>')}</div>` : '';
+
+  let order = '';
+  if(r > 0){
+    const canOrderNow = e.phase === 'Bestellung';
+    order = `<p>Sie haben <b>${r}</b> Ticket(s) reserviert${e.phase==='Reservierung' ? ` – nicht bestellte Reservierungen verfallen am <b>${fmt(e.resDeadline)}</b> (${countdown(e.resDeadline)})` : ''}.</p>
+      <div class="row" style="margin-top:10px"><div class="stepper" id="qty-order-stepper" data-max="${r}">
+          <button type="button" data-act="qtyOrder" data-dir="-1" aria-label="Weniger">−</button>
+          <output id="qty-order-out">${r}</output>
+          <button type="button" data-act="qtyOrder" data-dir="1" aria-label="Mehr">+</button>
+        </div>
+        <button class="btn primary" data-act="orderAsk" data-id="${e.id}" ${!canOrderNow?'disabled':''}>Ausgewählte Menge bestellen</button>
+        <button class="btn quiet" data-act="releaseAsk" data-id="${e.id}">Ausgewählte Menge zurückgeben</button>
+      </div>
+      <p class="small muted" style="margin-top:8px">${canOrderNow ? 'Sie können auch nur einen Teil bestellen und den Rest reserviert lassen oder zurückgeben.' : 'Bestellen ist erst in der Bestellphase möglich; zurückgeben können Sie schon jetzt.'}</p>`;
+  } else {
+    order = '<p class="muted">Keine offene Reservierung.</p>';
+  }
+
+  let tickets = '';
+  if(o > 0){
+    const gs = guestsOf(e.id,d);
+    const rows = gs.map(g => `<tr>
+      <td data-label="Gast"><div class="name">${esc(g.name)}</div><div class="sub">${esc(g.email)}</div></td>
+      <td data-label="Compliance">${compChip(g.compliance)}</td>
+      <td data-label=""><div class="row">
+        ${g.compliance==='freigegeben'?`<button class="btn sm" data-act="ticket" data-gid="${g.id}">Ticket anzeigen</button>`:''}
+        ${g.compliance==='zu prüfen'?`<button class="btn sm quiet" data-act="approve" data-gid="${g.id}" title="Normalerweise prüft die Zentrale; hier zur Demo direkt möglich">Jetzt freigeben (Demo)</button>`:''}
+        <button class="btn sm quiet" data-act="guestForm" data-gid="${g.id}">Gast wechseln</button>
+        <button class="btn sm quiet" data-act="cancelAsk" data-id="${e.id}" data-gid="${g.id}">Stornieren</button>
+      </div></td></tr>`).join('');
+    let empty = '';
+    for(let i=0;i<o-gs.length;i++){
+      empty += `<tr><td data-label="Gast" class="muted">Noch kein Gast</td><td data-label="Compliance"></td><td data-label=""><div class="row">
+        <button class="btn sm primary" data-act="guestForm" data-id="${e.id}">Gast erfassen</button>
+        <button class="btn sm quiet" data-act="cancelAsk" data-id="${e.id}">Stornieren</button></div></td></tr>`;
+    }
+    tickets = `<div class="scroll"><table class="tbl responsive"><thead><tr><th>Gast</th><th>Compliance</th><th></th></tr></thead><tbody>${rows}${empty}</tbody></table></div>
+      <p class="small muted" style="margin-top:10px">${gs.length} von ${o} Tickets haben einen Gast. Ein Ticket steht erst nach der Prüfung durch die Zentrale bereit. Storno gibt das Ticket sofort ins Kontingent zurück.</p>`;
+  } else {
+    tickets = '<p class="muted">Sobald Sie bestellt haben, erfassen Sie hier die Gäste.</p>';
+  }
+
+  const invoice = e.price > 0
+    ? (o > 0 ? `<p>Rechnung über ${o} Ticket(s): <b>${eur(o*e.price)}</b> netto. <button class="btn sm quiet" data-act="invoice" data-id="${e.id}">Ansehen</button></p>` : '<p class="muted">Eine Rechnung entsteht nach der Bestellung.</p>')
+    : '<p class="muted">Kostenloses Event: Es entsteht keine Rechnung.</p>';
+
+  return `<div class="head"><div><h1>${esc(e.name)}</h1><p class="muted">${fmt(e.date)}, ${esc(e.place)}</p></div>
+    <button class="btn" data-act="nav" data-view="d-events">Zurück zur Übersicht</button></div>
+    ${stepIndicator(r,o,e.phase)}
+    <div class="row" style="gap:18px">${phaseChip(e.phase)}${e.phase==='Bestellung'?(e.resOpen?'<span class="chip info">Reservierung noch offen</span>':'<span class="chip neutral">Reservierung geschlossen</span>'):''}<span>${modeLine}</span><span>${e.price>0?eur(e.price)+' je Ticket (netto)':'Kostenlos'}</span></div>
+    <div class="facts"><div><b>${o}</b><span>bestellt</span></div><div><b>${r}</b><span>reserviert</span></div><div><b>${free}</b><span>für Sie frei</span></div></div>
+    ${barMine(e)}
+    <div class="legend"><span class="l-mine">Bestellt von Ihnen</span><span class="l-res">Reserviert von Ihnen</span><span>Andere Autohäuser</span><span class="l-free">Frei</span></div>
+    <div class="sec"><h3>Reservieren</h3>${reserve}${wlHtml}</div>
+    <div class="sec"><h3>Bestellen</h3>${order}</div>
+    <div class="sec"><h3>Tickets und Gäste</h3>${tickets}</div>
+    <div class="sec"><h3>Rechnung</h3>${invoice}</div>`;
+}
+
+function dInvoices(){
+  const paid = state.events.filter(e => e.price > 0 && (e.ordered[ME]||0) > 0);
+  const free = state.events.filter(e => e.price === 0 && (e.ordered[ME]||0) > 0);
+  const rows = paid.map(e => { const o = e.ordered[ME]; return `<tr>
+    <td data-label="Rechnung" class="name">RE-${e.id.toUpperCase()}-${ME.toUpperCase()}</td><td data-label="Event">${esc(e.name)}</td><td data-label="Tickets" class="num">${o}</td><td data-label="Betrag netto" class="num">${eur(o*e.price)}</td>
+    <td data-label="Status"><span class="chip ok">Daten aufbereitet</span></td><td data-label=""><button class="btn sm" data-act="invoice" data-id="${e.id}">Ansehen</button></td></tr>`; }).join('');
+  const table = paid.length
+    ? `<div class="scroll"><table class="tbl responsive"><thead><tr><th>Rechnung</th><th>Event</th><th class="num">Tickets</th><th class="num">Betrag netto</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
+    : '<p class="msg">Noch keine Rechnung. Rechnungen entstehen, sobald Sie Tickets für ein kostenpflichtiges Event bestellen.</p>';
+  const fr = free.length ? `<div class="sec"><h3>Kostenlose Events</h3><p class="muted">Für ${free.map(e => esc(e.name)).join(', ')} entsteht keine Rechnung.</p></div>` : '';
+  return `<div class="head"><div><h1>Rechnungen</h1><p class="muted">Rechnungsdaten Ihrer Bestellungen.</p></div></div>${table}${fr}`;
+}
+
+/* ---------- Zentrale Administration ---------- */
+function aCheck(){
+  const c = state.check;
+  const evOpts = ['<option value="all">Alle Events</option>']
+    .concat(state.events.map(e => `<option value="${e.id}" ${c.eid===e.id?'selected':''}>${esc(e.name)}</option>`)).join('');
+  const dealersInScope = c.eid === 'all' ? [] : dealers.filter(d => guestsOf(c.eid, d.id).length);
+  const dealerOpts = ['<option value="all">Alle Autohäuser</option>']
+    .concat(dealersInScope.map(d => `<option value="${d.id}" ${c.dealer===d.id?'selected':''}>${esc(d.name)}</option>`)).join('');
+
+  let list = state.guests;
+  if(c.eid !== 'all') list = list.filter(g => g.evId === c.eid);
+  if(c.eid !== 'all' && c.dealer !== 'all') list = list.filter(g => g.dealerId === c.dealer);
+
+  const open = list.filter(g => g.compliance === 'zu prüfen');
+  const done = list.filter(g => g.compliance !== 'zu prüfen');
+  const showEventCol = c.eid === 'all';
+
+  const row = (g, act) => `<tr>
+    <td data-label="Gast"><div class="name">${esc(g.name)}</div><div class="sub">${esc(g.email)}</div></td>
+    ${showEventCol ? `<td data-label="Event">${esc(ev(g.evId).name)}</td>` : ''}
+    <td data-label="Autohaus">${esc(dname(g.dealerId))}</td>
+    <td data-label="Einwilligung">${g.consent?'<span class="chip ok">Liegt vor</span>':'<span class="chip bad">Fehlt</span>'}</td>
+    <td data-label="">${act ? `<div class="row"><button class="btn sm primary" data-act="approve" data-gid="${g.id}">Freigeben</button><button class="btn sm danger" data-act="reject" data-gid="${g.id}">Ablehnen</button></div>` : compChip(g.compliance)}</td></tr>`;
+  const head = `<thead><tr><th>Gast</th>${showEventCol?'<th>Event</th>':''}<th>Autohaus</th><th>Einwilligung</th><th></th></tr></thead>`;
+
+  const overview = c.eid === 'all' ? `<div class="sec"><h3>Nach Event</h3><div class="scroll"><table class="tbl responsive"><thead><tr><th>Event</th><th class="num">Zu prüfen</th><th class="num">Geprüft</th><th></th></tr></thead><tbody>
+    ${state.events.map(e => {
+      const o = state.guests.filter(g=>g.evId===e.id && g.compliance==='zu prüfen').length;
+      const dn = state.guests.filter(g=>g.evId===e.id && g.compliance!=='zu prüfen').length;
+      return `<tr><td data-label="Event" class="name">${esc(e.name)}</td><td data-label="Zu prüfen" class="num">${o}</td><td data-label="Geprüft" class="num">${dn}</td><td data-label=""><button class="btn sm" data-act="checkOpenEvent" data-id="${e.id}">Einzelansicht öffnen</button></td></tr>`;
+    }).join('')}
+  </tbody></table></div></div>` : '';
+
+  return `<div class="head"><div><h1>Gästeprüfung</h1><p class="muted">Gäste erhalten ihr Ticket erst nach der Freigabe.</p></div></div>
+    <div class="row" style="margin-bottom:6px">
+      <label class="small muted">Event <select data-change="checkEvent" aria-label="Event wählen">${evOpts}</select></label>
+      ${c.eid!=='all' ? `<label class="small muted">Autohaus <select data-change="checkDealer" aria-label="Autohaus filtern">${dealerOpts}</select></label>` : ''}
+      ${c.eid!=='all' ? `<button class="btn sm quiet" type="button" data-act="checkAllEvents">Alle Events anzeigen</button>` : ''}
+    </div>
+    <div class="facts"><div><b>${open.length}</b><span>zu prüfen</span></div><div><b>${done.length}</b><span>bereits geprüft</span></div></div>
+    ${overview}
+    <h3 style="margin-bottom:8px">Zu prüfen (${open.length})</h3>
+    ${open.length ? `<div class="scroll"><table class="tbl responsive">${head}<tbody>${open.map(g=>row(g,true)).join('')}</tbody></table></div>` : '<p class="msg ok">Alle Gäste in dieser Auswahl sind geprüft.</p>'}
+    <div class="sec"><h3>Bereits geprüft (${done.length})</h3>
+    ${done.length ? `<div class="scroll"><table class="tbl responsive">${head}<tbody>${done.map(g=>row(g,false)).join('')}</tbody></table></div>` : '<p class="muted">Noch keine geprüften Gäste in dieser Auswahl.</p>'}</div>`;
+}
+
+function csvGuests(){
+  const lines = ['Event;Autohaus;Ticketnummer;Name;E-Mail;Einwilligung;Pruefstatus'];
+  state.guests.forEach(g => lines.push([ev(g.evId).name, dname(g.dealerId), ticketNo(g), g.name, g.email, g.consent?'ja':'nein', g.compliance].join(';')));
+  return lines.join('\n');
+}
+function csvInvoices(){
+  const lines = ['Rechnungsnummer;Event;Autohaus;Anzahl;Einzelpreis_EUR_netto;Betrag_EUR_netto'];
+  state.events.filter(e => e.price > 0).forEach(e => dealers.forEach(d => {
+    const o = e.ordered[d.id]||0;
+    if(o > 0) lines.push([`RE-${e.id.toUpperCase()}-${d.id.toUpperCase()}`, e.name, d.name, o, e.price, o*e.price].join(';'));
+  }));
+  return lines.join('\n');
+}
+function aExport(){
+  return `<div class="head"><div><h1>Exporte</h1><p class="muted">Aufbereitete Daten zur Übergabe an CRM und Rechnungssystem.</p></div></div>
+    <div class="row"><button class="btn primary" data-act="export" data-kind="guests">Gästedaten für das CRM</button><button class="btn primary" data-act="export" data-kind="invoices">Rechnungsdaten</button></div>
+    ${state.csv ? `<div class="sec"><h3>${esc(state.csv.title)}</h3><pre class="pre">${esc(state.csv.text)}</pre></div>` : '<p class="msg" style="margin-top:20px">Wählen Sie einen Export, um die Vorschau zu sehen.</p>'}`;
+}
+function aUsers(){
+  const rows = [
+    ['Petra Hoffmann','Zentrale Administration','Zentrale'],
+    ['Tobias Krämer','Event-Manager','Zentrale'],
+    ['Lena Fischer','Autohaus','Autohaus Müller'],
+    ['Ralf Neumann','Autohaus','Auto Schmidt'],
+    ['Sven Albrecht','Autohaus','Autohaus Weber'],
+    ['Mia Wagner','Check-in-Personal','Eventteam']
+  ].map(r => `<tr><td data-label="Name" class="name">${r[0]}</td><td data-label="Rolle">${r[1]}</td><td data-label="Zugehörigkeit">${r[2]}</td></tr>`).join('');
+  return `<div class="head"><div><h1>Nutzer und Rollen</h1><p class="muted">Beispielnutzer der Plattform.</p></div>
+    <button class="btn" disabled title="Ab Tranche 2 über Single Sign-on">Nutzer anlegen</button></div>
+    <div class="scroll"><table class="tbl responsive"><thead><tr><th>Name</th><th>Rolle</th><th>Zugehörigkeit</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="small muted" style="margin-top:10px">Anlegen, Bearbeiten und Sperren von Nutzern erfolgt ab Tranche 2 über die Anbindung an Single Sign-on; in Tranche 1 sind hier feste Beispielnutzer hinterlegt.</p>`;
+}
+
+/* ---------- Check-in ---------- */
+function cScan(){
+  const e = ev(state.cevent);
+  const q = (state.checkinQuery||'').trim().toLowerCase();
+  const gs = state.guests.filter(g => g.evId === e.id);
+  const filtered = q ? gs.filter(g => g.name.toLowerCase().includes(q)) : gs;
+  const opts = state.events.map(x => `<option value="${x.id}" ${x.id===e.id?'selected':''}>${esc(x.name)}</option>`).join('');
+  const inn = gs.filter(g => g.checkedIn).length;
+  const s = state.scan;
+  const res = s ? `<div class="scanres ${s.kind}" role="alert">${esc(s.text)}</div>` : '';
+  const rows = filtered.map(g => `<tr><td data-label="Gast" class="name">${esc(g.name)}</td><td data-label="Ticket">${ticketNo(g)}</td><td data-label="Compliance">${compChip(g.compliance)}</td>
+    <td data-label="Status">${g.checkedIn?'<span class="chip ok">Eingecheckt</span>':'<span class="chip neutral">Ausstehend</span>'}</td>
+    <td data-label=""><button class="btn sm" data-act="scan" data-no="${ticketNo(g)}">Scan simulieren</button></td></tr>`).join('');
+  return `<div class="head"><div><h1>Check-in</h1><p class="muted">QR-Code scannen und Gast einchecken.</p></div>
+    <label class="small muted">Event <select data-change="cevent" aria-label="Event wählen">${opts}</select></label></div>
+    ${res}
+    <div class="form" style="max-width:none;display:grid;gap:12px;grid-template-columns:1fr;margin-bottom:6px">
+    <form class="row" data-form="scan" style="gap:10px"><input type="text" name="no" placeholder="QR-Code scannen (Scanner tippt automatisch), z. B. TS-E2-0001" autocomplete="off" style="flex:1;min-width:160px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 12px;min-height:44px"><button class="btn primary" type="submit">Ticket prüfen</button></form>
+    </div>
+    <p class="small muted" style="margin-top:-6px;margin-bottom:14px">In echt scannt ein QR-Code-Handscanner das Ticket und tippt den Code wie eine Tastatur in dieses Feld; hier zur Demo auch manuell eingebbar oder über „Scan simulieren“ unten.</p>
+    <input type="text" id="ci-search" placeholder="Oder Gast nach Namen suchen…" value="${esc(state.checkinQuery||'')}" style="width:100%;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 12px;min-height:44px;margin-bottom:14px">
+    <div class="facts"><div><b>${inn}</b><span>von ${gs.length} eingecheckt</span></div></div>
+    <div class="sec"><h3>Tickets dieses Events</h3>
+    ${filtered.length ? `<div class="scroll"><table class="tbl responsive"><thead><tr><th>Gast</th><th>Ticketnummer</th><th>Compliance</th><th>Check-in</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<p class="muted">Keine Treffer.</p>'}</div>`;
+}
+
+/* ---------- Modals ---------- */
+function openModal(html, extraClass){
+  const root = $('#modal-root');
+  root.innerHTML = `<div class="overlay" data-act="close-bg"><div class="modal ${extraClass||''}" role="dialog" aria-modal="true">${html}</div></div>`;
+  const f = root.querySelector('input,button');
+  if(f) f.focus();
+}
+function closeModal(){ $('#modal-root').innerHTML = ''; pendingConfirm = null; }
+
+function guestModal(eid, gid){
+  const g = gid ? state.guests.find(x => x.id === gid) : null;
+  openModal(`<h2>${g?'Gast wechseln':'Gast erfassen'}</h2>
+    <form class="form" data-form="guest" data-eid="${eid||g.evId}" data-gid="${gid||''}" novalidate>
+      <label>Name<input type="text" name="name" value="${g?esc(g.name):''}" required></label>
+      <label>E-Mail<input type="email" name="email" value="${g?esc(g.email):''}" required></label>
+      <label class="check"><input type="checkbox" name="consent"><span>Der Gast hat der Verarbeitung seiner Daten für diese Veranstaltung zugestimmt.</span></label>
+      ${g?'<p class="small muted">Nach dem Wechsel prüft die Zentrale den neuen Gast erneut. Das bisherige Ticket wird ungültig.</p>':''}
+      <p class="msg bad" id="gerr" hidden></p>
+      <div class="row end"><button class="btn" type="button" data-act="close">Abbrechen</button><button class="btn primary" type="submit">${g?'Gast wechseln':'Gast erfassen'}</button></div>
+    </form>`);
+}
+function ticketModal(gid){
+  const g = state.guests.find(x => x.id === gid), e = ev(g.evId);
+  openModal(`<h2>Digitales Ticket</h2>
+    <div class="ticket"><div class="tmain"><small>${esc(e.type)}</small><h3>${esc(e.name)}</h3>
+      <p>${fmt(e.date)}<br>${esc(e.place)}</p><small>Gast</small><p><b>${esc(g.name)}</b></p><small>Eingeladen von</small><p>${esc(dname(g.dealerId))}</p></div>
+      <div class="tstub">${qr(ticketNo(g))}<span>${ticketNo(g)}</span></div></div>
+    <div class="row end"><button class="btn primary" data-act="close">Schließen</button></div>`);
+}
+function invoiceModal(eid){
+  const e = ev(eid), o = e.ordered[ME]||0;
+  const todayIso = TODAY.toISOString().slice(0,10);
+  const net = o*e.price;
+  openModal(`<div class="invoice-doc">
+      <div class="invoice-head">
+        <div><div class="invoice-brand">Rechnungsdaten</div><p class="small muted">Aufbereitet zur Übernahme in das Rechnungssystem des Herstellers</p></div>
+        <div class="invoice-meta"><p><b>Nr.</b> RE-${e.id.toUpperCase()}-${ME.toUpperCase()}</p><p><b>Datum</b> ${fmt(todayIso)}</p></div>
+      </div>
+      <div class="invoice-parties">
+        <div><span class="small muted">Aussteller</span><p><b>Zentrale</b><br>Event-Team des Herstellers</p></div>
+        <div><span class="small muted">Empfänger</span><p><b>${esc(dname(ME))}</b><br>Autohaus-Bestellung</p></div>
+      </div>
+      <div class="invoice-event"><b>${esc(e.name)}</b><div class="small muted">${fmt(e.date)} · ${esc(e.place)}</div></div>
+      <table class="tbl"><thead><tr><th>Position</th><th class="num">Menge</th><th class="num">Einzelpreis</th><th class="num">Betrag</th></tr></thead>
+      <tbody><tr><td>Ticket ${esc(e.name)}</td><td class="num">${o}</td><td class="num">${eur(e.price)}</td><td class="num">${eur(net)}</td></tr></tbody></table>
+      <div class="invoice-totals">
+        <div>Summe netto</div><div class="num">${eur(net)}</div>
+        <div class="small muted">Umsatzsteuer</div><div class="num small muted">gesondert im Rechnungssystem</div>
+        <div class="grand">Gesamt (netto)</div><div class="num grand">${eur(net)}</div>
+      </div>
+      <div class="invoice-foot"><p class="small muted">Diese Ansicht zeigt die von der Plattform aufbereiteten Rechnungsdaten. Rechnungsstellung, Umsatzsteuerausweis, Versand und Zahlungsabwicklung erfolgen im Rechnungssystem des Herstellers.</p></div>
+    </div>
+    <div class="row end" style="margin-top:16px"><button class="btn primary" data-act="close">Schließen</button></div>`, 'modal-invoice');
+}
+
+/* ---------- Aktionen ---------- */
+document.addEventListener('click', ev_ => {
+  if(ev_.target.classList && ev_.target.classList.contains('overlay')){ closeModal(); return; }
+  const a = ev_.target.closest('[data-act]');
+  if(!a) return;
+  const d = a.dataset, act = d.act;
+  switch(act){
+    case 'login': state.role = d.role; state.view = HOME[d.role]; state.scan = null; render(); window.scrollTo(0,0); break;
+    case 'nav': state.view = d.view; state.scan = null; render(); window.scrollTo(0,0); break;
+    case 'openEvent': state.eid = d.id; state.view = d.view; document.getElementById('qty-out') && 0; render(); window.scrollTo(0,0); break;
+    case 'openLanding': state.eid = d.id; state.view = 'landing'; render(); window.scrollTo(0,0); break;
+    case 'landingCta': toast('Vorschau: Das würde zur Anmeldung im EventDrive führen.'); break;
+    case 'landingOn': { const e = ev(d.id); e.landing = {enabled:true, slug:e.landing?.slug || slugify(e.name)}; toast('Landingpage aktiviert.'); render(); break; }
+    case 'landingOff': { const e = ev(d.id); e.landing.enabled = false; toast('Landingpage deaktiviert.'); render(); break; }
+    case 'notes': state.notes = !state.notes; render(); break;
+    case 'reset': { const notes = state.notes; state = makeState(); state.notes = notes; closeModal(); render(); toast('Demo zurückgesetzt.'); break; }
+    case 'close': closeModal(); break;
+    case 'confirm-yes': { const fn = pendingConfirm; closeModal(); if(fn) fn(); break; }
+    case 'phase': { const e = ev(d.id); if(e.phase === 'Bestellung'){ e.phase = 'Geschlossen'; e.resOpen = false; toast('Event geschlossen. Es kann nicht mehr reserviert oder bestellt werden.'); } render(); break; }
+    case 'phaseOrderOpen': { const e = ev(d.id); e.phase = 'Bestellung'; e.resOpen = true; toast('Bestellphase gestartet. Autohäuser können jetzt bestellen und weiterhin reservieren.'); render(); break; }
+    case 'phaseOrderClose': { const e = ev(d.id); e.phase = 'Bestellung'; e.resOpen = false; toast('Bestellphase gestartet, Reservierung geschlossen. Autohäuser können jetzt nur noch bestehende Reservierungen bestellen oder zurückgeben.'); render(); break; }
+    case 'closeRes': { const e = ev(d.id); e.resOpen = false; toast('Reservierung geschlossen. Bestellen und Zurückgeben bleiben möglich.'); render(); break; }
+    case 'expire': {
+      const e = ev(d.id); const n = sum(e.reserved);
+      Object.keys(e.reserved).forEach(k => e.reserved[k] = 0);
+      const wm = advanceWaitlist(e);
+      toast([n ? `Frist abgelaufen: ${n} nicht bestellte Reservierung(en) verfallen.` : 'Frist abgelaufen: Es gab keine offenen Reservierungen.', ...wm].join(' '));
+      render(); break;
+    }
+    case 'qtyReserve': {
+      const box = document.getElementById('qty-reserve-stepper'), out = document.getElementById('qty-reserve-out');
+      const max = parseInt(box.dataset.max,10), dir = parseInt(d.dir,10);
+      let v = parseInt(out.textContent,10) + dir;
+      v = Math.max(1, Math.min(max, v));
+      out.textContent = v; break;
+    }
+    case 'qtyOrder': {
+      const box = document.getElementById('qty-order-stepper'), out = document.getElementById('qty-order-out');
+      const max = parseInt(box.dataset.max,10), dir = parseInt(d.dir,10);
+      let v = parseInt(out.textContent,10) + dir;
+      v = Math.max(1, Math.min(max, v));
+      out.textContent = v; break;
+    }
+    case 'reserve': {
+      const e1 = ev(d.id), q = parseInt(document.getElementById('qty-reserve-out').textContent,10);
+      if(!(q >= 1) || q > freeFor(e1,ME) || e1.phase === 'Geschlossen' || !e1.resOpen){ toast(`Bitte eine Anzahl zwischen 1 und ${freeFor(e1,ME)} wählen.`, 'bad'); break; }
+      e1.reserved[ME] = (e1.reserved[ME]||0) + q;
+      toast(e1.phase === 'Reservierung'
+        ? `${q} Ticket(s) reserviert. Reservierungen verfallen am ${fmt(e1.resDeadline)}, wenn sie nicht bestellt werden.`
+        : `${q} Ticket(s) zusätzlich reserviert, unverbindlich. Sie können jederzeit einen Teil davon bestellen oder zurückgeben.`);
+      render(); break;
+    }
+    case 'waitlist': {
+      const e1 = ev(d.id), q = parseInt(document.getElementById('qty-reserve-out').textContent,10);
+      if(!(q >= 1)){ toast('Bitte eine Anzahl von mindestens 1 wählen.', 'bad'); break; }
+      e1.waitlist.push({dealerId:ME, qty:q});
+      toast(`Sie stehen mit ${q} Ticket(s) auf der Warteliste.`); render(); break;
+    }
+    case 'orderAsk': {
+      const e1 = ev(d.id), rAll = e1.reserved[ME]||0, q = Math.min(rAll, parseInt(document.getElementById('qty-order-out').textContent,10)||0);
+      if(!(q >= 1) || q > rAll || e1.phase !== 'Bestellung'){ toast(`Bitte eine Anzahl zwischen 1 und ${rAll} wählen.`, 'bad'); break; }
+      const partial = q < rAll;
+      askConfirm('Verbindlich bestellen?', `Sie bestellen <b>${q}</b> von ${rAll} reservierten Ticket(s) für „${esc(e1.name)}“ verbindlich${e1.price>0?` (${eur(q*e1.price)} netto)`:''}.${partial?` Die restlichen ${rAll-q} bleiben reserviert.`:''} Das lässt sich nicht mehr zurücknehmen, ein einzelnes Ticket können Sie später aber stornieren.`, 'Verbindlich bestellen', () => {
+        e1.ordered[ME] = (e1.ordered[ME]||0) + q; e1.reserved[ME] = rAll - q;
+        toast(e1.price > 0 ? `${q} Ticket(s) bestellt. Die Rechnungsdaten sind aufbereitet.` : `${q} Ticket(s) bestellt. Für dieses Event entsteht keine Rechnung.`);
+        render();
+      });
+      break;
+    }
+    case 'releaseAsk': {
+      const e1 = ev(d.id), rAll = e1.reserved[ME]||0, q = Math.min(rAll, parseInt(document.getElementById('qty-order-out').textContent,10)||0);
+      if(!(q >= 1) || q > rAll){ toast(`Bitte eine Anzahl zwischen 1 und ${rAll} wählen.`, 'bad'); break; }
+      const partial = q < rAll;
+      askConfirm('Reservierung zurückgeben?', `${q} von ${rAll} reservierten Ticket(s) werden sofort wieder freigegeben.${partial?` Die restlichen ${rAll-q} bleiben für Sie reserviert.`:''}`, 'Zurückgeben', () => {
+        e1.reserved[ME] = rAll - q; const wm = advanceWaitlist(e1); toast([`${q} Ticket(s) zurückgegeben.`, ...wm].join(' ')); render();
+      });
+      break;
+    }
+    case 'guestForm': guestModal(d.id, d.gid); break;
+    case 'cancelAsk': {
+      askConfirm('Ticket stornieren?', 'Das Ticket wird storniert und das Kontingent sofort wieder frei. Ein zugeordneter Gast verliert sein Ticket.', 'Stornieren', () => {
+        const e1 = ev(d.id);
+        if(d.gid){ state.guests = state.guests.filter(g => g.id !== d.gid); }
+        e1.ordered[ME] = Math.max(0,(e1.ordered[ME]||0) - 1);
+        const wm = advanceWaitlist(e1);
+        toast(['Ticket storniert. Das Kontingent ist wieder frei.', ...wm].join(' '));
+        render();
+      });
+      break;
+    }
+    case 'ticket': ticketModal(d.gid); break;
+    case 'invoice': invoiceModal(d.id); break;
+    case 'approve': { const g = state.guests.find(x => x.id === d.gid); g.compliance = 'freigegeben'; toast(`${g.name} freigegeben. Das Ticket steht bereit.`); render(); break; }
+    case 'reject': { const g = state.guests.find(x => x.id === d.gid); g.compliance = 'abgelehnt'; toast(`${g.name} abgelehnt. Das Autohaus muss den Gast wechseln.`); render(); break; }
+    case 'checkOpenEvent': state.check.eid = d.id; state.check.dealer = 'all'; render(); window.scrollTo(0,0); break;
+    case 'checkAllEvents': state.check.eid = 'all'; state.check.dealer = 'all'; render(); break;
+    case 'export': state.csv = d.kind === 'guests' ? {title:'Gästedaten für das CRM', text:csvGuests()} : {title:'Rechnungsdaten', text:csvInvoices()}; render(); break;
+    case 'scan': doScan(d.no); break;
+    case 'tmpl': {
+      const t = TEMPLATES.find(x => x.id === d.id), w = state.wiz;
+      w.tmpl = t.id; w.type = t.type; w.total = t.total; w.mode = t.mode; w.price = t.price; w.free = t.price === 0; w.place = t.place;
+      if(!w.name) w.name = t.name;
+      if(t.mode === 'fest'){
+        w.selected = dealers.map(dl => dl.id);
+        const each = Math.floor(t.total / dealers.length), rest = t.total - each*dealers.length;
+        w.quota = {}; dealers.forEach((dl,i) => w.quota[dl.id] = each + (i < rest ? 1 : 0));
+      }
+      render(); break;
+    }
+    case 'dealerAdd': {
+      const w = state.wiz, input = document.getElementById('w-dealer-search');
+      const name = (input.value||'').trim();
+      const match = dealers.find(dl => dl.name.toLowerCase() === name.toLowerCase() && !w.selected.includes(dl.id));
+      if(!match){ toast('Bitte ein Autohaus aus der Liste auswählen.', 'bad'); break; }
+      w.selected.push(match.id); w.quota[match.id] = w.quota[match.id] || 0;
+      render();
+      const el = document.getElementById('w-dealer-search'); if(el) el.focus();
+      break;
+    }
+    case 'dealerRemove': {
+      const w = state.wiz;
+      w.selected = w.selected.filter(id => id !== d.id);
+      delete w.quota[d.id];
+      render(); break;
+    }
+    case 'wiznext': { if(wizValidateStep()) { state.wiz.step++; render(); } break; }
+    case 'wizback': { state.wiz.step--; render(); break; }
+    case 'wizsubmit': wizSubmit(); break;
+  }
+});
+
+function wizValidateStep(){
+  const w = state.wiz, err = $('#formerr');
+  const fail = m => { err.textContent = m; err.hidden = false; return false; };
+  if(w.step === 1){
+    if(!w.name.trim()) return fail('Bitte einen Namen für das Event angeben.');
+    if(!w.date) return fail('Bitte ein Datum wählen.');
+  }
+  if(w.step === 2){
+    if(!(parseInt(w.total,10) >= 1)) return fail('Das Gesamtkontingent muss mindestens 1 betragen.');
+    if(w.mode === 'fest' && w.selected.length === 0) return fail('Bitte mindestens ein Autohaus hinzufügen.');
+    if(w.mode === 'fest' && sum(w.quota) > parseInt(w.total,10)) return fail(`Die Summe der Kontingente (${sum(w.quota)}) übersteigt das Gesamtkontingent (${w.total}).`);
+  }
+  if(w.step === 3){
+    if(!w.free && !(parseFloat(w.price) >= 0)) return fail('Bitte einen Preis angeben oder das Event als kostenlos markieren.');
+  }
+  if(err) err.hidden = true;
+  return true;
+}
+function wizSubmit(){
+  if(!wizValidateStep()) return;
+  const w = state.wiz;
+  if(w.mode === 'fest' && sum(w.quota) > parseInt(w.total,10)){ toast('Die Kontingente übersteigen das Gesamtkontingent.', 'bad'); return; }
+  const id = 'e' + (state.events.length + 1);
+  state.events.push({id, name:w.name, type:w.type, date:w.date, place:w.place || 'Ort folgt', mode:w.mode, total:parseInt(w.total,10),
+    price: w.free ? 0 : parseFloat(w.price)||0, phase:'Reservierung', resOpen:true, resDeadline:w.resDeadline || w.date,
+    quota: w.mode==='fest' ? {...w.quota} : {}, reserved:{}, ordered:{}, waitlist:[],
+    landing:{enabled:w.landing, slug:w.slug || slugify(w.name)}, desc:'Beschreibung folgt.'});
+  let tmplMsg = '';
+  if(w.saveTmpl){
+    const tname = (w.tmplName || w.name || 'Neue Vorlage').trim();
+    TEMPLATES.push({id:'tmpl'+(TEMPLATES.length+1)+'-'+slugify(tname), name:tname, type:w.type, total:parseInt(w.total,10), mode:w.mode, price:w.free?0:parseFloat(w.price)||0, place:w.place||'Ort folgt'});
+    tmplMsg = ` Vorlage „${tname}“ gespeichert.`;
+  }
+  state.wiz = makeState().wiz;
+  state.view = 'm-events';
+  render(); window.scrollTo(0,0);
+  toast('Event angelegt. Die Reservierungsphase ist offen.' + tmplMsg);
+}
+
+function doScan(no){
+  const g = state.guests.find(x => ticketNo(x).toLowerCase() === String(no).trim().toLowerCase() && x.evId === state.cevent);
+  if(!no || !String(no).trim()) state.scan = {kind:'warn', text:'Bitte eine Ticketnummer eingeben.'};
+  else if(!g) state.scan = {kind:'bad', text:'Kein Zutritt: Ticket nicht gefunden oder für ein anderes Event.'};
+  else if(g.compliance !== 'freigegeben') state.scan = {kind:'bad', text:`Kein Zutritt: ${g.name} ist nicht freigegeben. Bitte an die Zentrale verweisen.`};
+  else if(g.checkedIn) state.scan = {kind:'warn', text:`Achtung: ${g.name} ist bereits eingecheckt.`};
+  else { g.checkedIn = true; state.scan = {kind:'ok', text:`Zutritt frei: ${g.name}`}; }
+  render();
+}
+
+document.addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target, fd = new FormData(f);
+  switch(f.dataset.form){
+    case 'guest': {
+      const name = (fd.get('name')||'').trim(), email = (fd.get('email')||'').trim(), consent = fd.get('consent') === 'on';
+      const err = $('#gerr');
+      if(!name || !email || !email.includes('@')){ err.textContent = 'Bitte Name und eine gültige E-Mail-Adresse angeben.'; err.hidden = false; break; }
+      if(!consent){ err.textContent = 'Ohne Einwilligung des Gastes kann kein Ticket ausgestellt werden.'; err.hidden = false; break; }
+      if(f.dataset.gid){
+        const g = state.guests.find(x => x.id === f.dataset.gid);
+        Object.assign(g, {name, email, consent:true, compliance:'zu prüfen', checkedIn:false});
+        toast('Gast gewechselt. Die Zentrale prüft den neuen Gast.');
+      } else {
+        state.guests.push({id:'g'+(++state.n), evId:f.dataset.eid, dealerId:ME, name, email, consent:true, compliance:'zu prüfen', checkedIn:false, n:state.n});
+        toast('Gast erfasst. Die Zentrale prüft den Gast, danach steht das Ticket bereit.');
+      }
+      closeModal(); render(); break;
+    }
+    case 'scan': doScan(fd.get('no')); break;
+  }
+});
+
+/* ---------- Wizard: Live-Bindung der Felder ---------- */
+document.addEventListener('input', e => {
+  const w = state.wiz;
+  if(e.target.id === 'w-name'){ w.name = e.target.value; renderPreviewOnly(); }
+  else if(e.target.id === 'w-date'){ w.date = e.target.value; renderPreviewOnly(); }
+  else if(e.target.id === 'w-place'){ w.place = e.target.value; renderPreviewOnly(); }
+  else if(e.target.id === 'w-type'){ w.type = e.target.value; }
+  else if(e.target.id === 'w-total'){ w.total = e.target.value; updateWizSum(); }
+  else if(e.target.classList.contains('q')){ w.quota[e.target.dataset.q] = parseInt(e.target.value,10)||0; updateWizSum(); }
+  else if(e.target.id === 'w-price'){ w.price = e.target.value; renderPreviewOnly(); }
+  else if(e.target.id === 'w-deadline'){ w.resDeadline = e.target.value; renderPreviewOnly(); }
+  else if(e.target.id === 'w-slug'){ w.slug = e.target.value; }
+  else if(e.target.id === 'ci-search'){ state.checkinQuery = e.target.value; render(); document.getElementById('ci-search').focus(); const el=document.getElementById('ci-search'); el.setSelectionRange(el.value.length, el.value.length); }
+});
+document.addEventListener('change', e => {
+  const t = e.target, w = state.wiz;
+  if(t.name === 'w-mode'){ w.mode = t.value; render(); }
+  if(t.id === 'w-free'){ w.free = t.checked; render(); }
+  if(t.id === 'w-landing'){ w.landing = t.checked; if(t.checked && !w.slug) w.slug = slugify(w.name); render(); }
+  if(t.id === 'w-savetmpl'){ w.saveTmpl = t.checked; if(t.checked && !w.tmplName) w.tmplName = w.name; render(); }
+  if(t.id === 'w-tmplname'){ w.tmplName = t.value; }
+  if(t.dataset && t.dataset.change === 'role'){ state.role = t.value; state.view = HOME[t.value]; state.scan = null; render(); window.scrollTo(0,0); }
+  if(t.dataset && t.dataset.change === 'cevent'){ state.cevent = t.value; state.scan = null; state.checkinQuery=''; render(); }
+  if(t.dataset && t.dataset.change === 'checkEvent'){ state.check.eid = t.value; state.check.dealer = 'all'; render(); }
+  if(t.dataset && t.dataset.change === 'checkDealer'){ state.check.dealer = t.value; render(); }
+});
+function renderPreviewOnly(){
+  const p = document.querySelector('.preview');
+  if(p) p.outerHTML = wizPreview();
+}
+function updateWizSum(){
+  const box = document.getElementById('w-qsum'); if(!box) return;
+  const s = sum(state.wiz.quota);
+  const t = parseInt(state.wiz.total,10) || 0;
+  box.textContent = `Summe der Kontingente: ${s} von ${t}` + (s > t ? ' (zu hoch)' : s < t ? ` (${t-s} bleiben unverteilt)` : '');
+  box.style.color = s > t ? 'var(--bad)' : 'var(--muted)';
+  renderPreviewOnly();
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeModal();
+  if(e.key === 'Enter' && e.target.id === 'w-dealer-search'){ e.preventDefault(); document.querySelector('[data-act=dealerAdd]')?.click(); }
+});
+render();
+if(document.getElementById('w-qsum')) updateWizSum();
+</script>
+</body>
+</html>
+
+</body></html>
