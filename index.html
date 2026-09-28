@@ -534,7 +534,7 @@ function mEvents(){
     <td data-label="Phase">${phaseChip(e.phase)}</td>
     <td data-label="Kontingent">${modeText(e)}<div class="sub">${e.price>0?eur(e.price)+' je Ticket':'Kostenlos'}</div></td>
     <td data-label="Auslastung" class="cellbar block">${barAll(e)}<div class="sub">${sum(e.ordered)} bestellt, ${sum(e.reserved)} reserviert, ${totalFree(e)} frei von ${e.total}</div></td>
-    <td data-label=""><button class="btn sm" data-act="openEvent" data-id="${e.id}" data-view="m-event">Steuern</button></td>
+    <td data-label=""><button class="btn sm" data-act="openEvent" data-id="${e.id}" data-view="m-event">Verwalten</button></td>
   </tr>`).join('');
   return `<div class="head"><div><h1>Events</h1><p class="muted">Alle zentralen Veranstaltungen und ihr Buchungsstand.</p></div>
     <button class="btn primary" data-act="nav" data-view="m-new">Event anlegen</button></div>
@@ -689,7 +689,7 @@ function mEvent(){
 function landingView(){
   const e = ev(state.eid);
   return `<div class="head"><div><h1 style="font-size:20px">Vorschau: Öffentliche Landingpage</h1><p class="muted">Diese Seite hat zwei Zielgruppen: eingeladene Gäste und Autohäuser. Sie ist öffentlich erreichbar, z. B. verlinkt aus einer E-Mail-Einladung.</p></div>
-    <button class="btn" data-act="nav" data-view="m-event">Zurück zur Steuerung</button></div>
+    <button class="btn" data-act="nav" data-view="m-event">Zurück zur Verwaltung</button></div>
     <div class="landing"><div class="hero"><span>${esc(e.type)}</span><h1>${esc(e.name)}</h1><p class="muted">${fmt(e.date)} · ${esc(e.place)}</p></div>
       <div class="body">
         <p>${esc(e.desc||'')}</p>
